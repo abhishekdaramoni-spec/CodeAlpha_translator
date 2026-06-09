@@ -1,0 +1,8 @@
+streamlit
+deep-translator
+pytesseract
+Pillow
+gtts
+langdetect
+pandas
+reportlab
