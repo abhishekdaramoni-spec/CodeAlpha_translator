@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Language Translator</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI',sans-serif;
+}
+
+body{
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:linear-gradient(135deg,#667eea,#764ba2);
+    padding:20px;
+}
+
+.container{
+    width:100%;
+    max-width:850px;
+    backdrop-filter:blur(15px);
+    background:rgba(255,255,255,0.15);
+    border:1px solid rgba(255,255,255,0.2);
+    border-radius:20px;
+    padding:30px;
+    color:white;
+    box-shadow:0 8px 32px rgba(0,0,0,0.2);
+}
+
+h1{
+    text-align:center;
+    margin-bottom:25px;
+}
+
+.language-box{
+    display:flex;
+    gap:15px;
+    align-items:center;
+    margin-bottom:20px;
+}
+
+select{
+    flex:1;
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    outline:none;
+    font-size:16px;
+}
+
+.swap-btn{
+    width:50px;
+    height:50px;
+    border:none;
+    border-radius:50%;
+    cursor:pointer;
+    font-size:20px;
+}
+
+textarea{
+    width:100%;
+    min-height:140px;
+    resize:none;
+    border:none;
+    outline:none;
+    border-radius:12px;
+    padding:15px;
+    margin-top:10px;
+    margin-bottom:15px;
+    font-size:16px;
+}
+
+.translate-btn{
+    width:100%;
+    padding:15px;
+    border:none;
+    border-radius:12px;
+    background:#4f46e5;
+    color:white;
+    font-size:18px;
+    cursor:pointer;
+    transition:.3s;
+}
+
+.translate-btn:hover{
+    transform:translateY(-2px);
+}
+
+.actions{
+    display:flex;
+    gap:10px;
+    margin-top:10px;
+
+}
+
+.action-btn{
+    flex:1;
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    background:white;
+    color:#333;
+    font-weight:bold;
+}
+
+.loading{
+    text-align:center;
+    margin-top:10px;
+    display:none;
+}
+
+.footer{
+    text-align:center;
+    margin-top:20px;
+    opacity:0.8;
+}
+
+@media(max-width:700px){
+    .language-box{
+        flex-direction:column;
+    }
+
+    .swap-btn{
+        transform:rotate(90deg);
+    }
+
+    .actions{
+        flex-direction:column;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>🌐 Language Translator</h1>
+
+<div class="language-box">
+
+<select id="sourceLang">
+<option value="en">English</option>
+<option value="hi">Hindi</option>
+<option value="fr">French</option>
+<option value="es">Spanish</option>
+<option value="de">German</option>
+<option value="ta">Tamil</option>
+<option value="te">Telugu</option>
+</select>
+
+<button class="swap-btn" onclick="swapLanguages()">⇄</button>
+
+<select id="targetLang">
+<option value="hi">Hindi</option>
+<option value="en">English</option>
+<option value="fr">French</option>
+<option value="es">Spanish</option>
+<option value="de">German</option>
+<option value="ta">Tamil</option>
+<option value="te">Telugu</option>
+</select>
+
+</div>
+
+<label>Enter Text</label>
+<textarea id="inputText" placeholder="Type something..."></textarea>
+
+<button class="translate-btn" onclick="translateText()">
+Translate
+</button>
+
+<div class="loading" id="loading">
+Translating...
+</div>
+
+<br>
+
+<label>Translated Text</label>
+<textarea id="outputText" readonly></textarea>
+
+<div class="actions">
+<button class="action-btn" onclick="copyText()">📋 Copy</button>
+<button class="action-btn" onclick="speakText()">🔊 Speak</button>
+<button class="action-btn" onclick="clearText()">🗑 Clear</button>
+<button class="action-btn" onclick="stopSpeech()">⏹ Stop</button>
+</div>
+
+<div class="footer">
+Powered by Google Cloud Translation API
+</div>
+
+</div>
+
+<script>
+
+const apiKey = "";
+
+async function translateText(){
+
+    const text =
+    document.getElementById("inputText").value;
+
+    const source =
+    document.getElementById("sourceLang").value;
+
+    const target =
+    document.getElementById("targetLang").value;
+
+    if(text.trim()===""){
+        alert("Please enter text");
+        return;
+    }
+
+    document.getElementById("loading").style.display="block";
+
+    try{
+
+        const response = await fetch(
+        `https://translation.googleapis.com/language/translate/v2?key=${apiKey}`,
+        {
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            body:JSON.stringify({
+                q:text,
+                source:source,
+                target:target,
+                format:"text"
+            })
+        });
+
+        const data = await response.json();
+
+        if(data.error){
+            alert(data.error.message);
+            console.error(data.error);
+            return;
+        }
+
+        document.getElementById("outputText").value =
+        data.data.translations[0].translatedText;
+
+    }
+    catch(error){
+        console.error(error);
+        alert("Translation failed");
+    }
+
+    document.getElementById("loading").style.display="none";
+}
+
+function copyText(){
+
+    const text =
+    document.getElementById("outputText").value;
+
+    if(!text){
+        alert("Nothing to copy");
+        return;
+    }
+
+    navigator.clipboard.writeText(text);
+    alert("Copied Successfully");
+}
+
+function speakText() {
+
+    const text =
+    document.getElementById("outputText").value.trim();
+
+    if (!text) {
+        alert("No translated text to speak");
+        return;
+    }
+
+    speechSynthesis.cancel();
+
+    const langMap = {
+        en: "en-US",
+        hi: "hi-IN",
+        te: "te-IN",
+        ta: "ta-IN",
+        fr: "fr-FR",
+        es: "es-ES",
+        de: "de-DE"
+    };
+
+    const targetLang =
+    document.getElementById("targetLang").value;
+
+    const chunks =
+    text.match(/.{1,180}(\s|$)/g) || [text];
+
+    let index = 0;
+
+    function speakChunk() {
+
+        if(index >= chunks.length) return;
+
+        const utterance =
+        new SpeechSynthesisUtterance(chunks[index]);
+
+        utterance.lang =
+        langMap[targetLang] || "en-US";
+
+        utterance.rate = 1;
+        utterance.pitch = 1;
+        utterance.volume = 1;
+
+        utterance.onend = () => {
+            index++;
+            speakChunk();
+        };
+
+        speechSynthesis.speak(utterance);
+    }
+
+    speakChunk();
+}
+
+function stopSpeech(){
+    speechSynthesis.cancel();
+}
+
+function clearText(){
+
+    speechSynthesis.cancel();
+
+    document.getElementById("inputText").value="";
+    document.getElementById("outputText").value="";
+}
+
+function swapLanguages(){
+
+    const source =
+    document.getElementById("sourceLang");
+
+    const target =
+    document.getElementById("targetLang");
+
+    let temp = source.value;
+    source.value = target.value;
+    target.value = temp;
+}
+
+</script>
+
+</body>
+</html>
