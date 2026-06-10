@@ -14,14 +14,19 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# --- DETECT TESSERACT DEFAULT PATHS (WINDOWS) ---
+# --- DETECT TESSERACT DEFAULT PATHS ---
 def detect_default_tesseract():
-    common_paths = [
-        r"C:\Program Files\Tesseract-OCR\tesseract.exe",
-        r"C:\Program Files (x86)\Tesseract-OCR\tesseract.exe",
-        # Add portable/local workspace path check
-        r"tesseract.exe"
-    ]
+    if os.name == 'nt': # Windows
+        common_paths = [
+            r"C:\Program Files\Tesseract-OCR\tesseract.exe",
+            r"C:\Program Files (x86)\Tesseract-OCR\tesseract.exe",
+            r"tesseract.exe"
+        ]
+    else: # Linux / Render Docker
+        common_paths = [
+            "/usr/bin/tesseract",
+            "/usr/local/bin/tesseract"
+        ]
     for path in common_paths:
         if os.path.exists(path):
             return path
