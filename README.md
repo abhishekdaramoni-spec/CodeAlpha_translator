@@ -78,9 +78,9 @@ This version runs a local Python server and supports OCR image translation, hist
 3. Connect your repository and select `app.py` as the main file.
 4. Streamlit will automatically read [packages.txt](packages.txt) to install Tesseract OCR on the server and deploy your application.
 
-### B. Deploying the Streamlit Web App (Render)
+### Option B: Render (Docker Build)
 1. Link your GitHub repository to [Render](https://render.com/).
-2. Render will automatically read the [render.yaml](render.yaml) file to compile the dependencies and run the service.
+2. Render will automatically read your `render.yaml` file, detect the `Dockerfile`, and deploy the application as a Docker Web Service (automatically installing Tesseract OCR for image translation).
 
 ### C. Deploying the HTML App (GitHub Pages)
 1. Go to your GitHub Repository **Settings** -> **Pages**.
