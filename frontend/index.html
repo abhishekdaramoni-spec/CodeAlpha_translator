@@ -190,6 +190,7 @@ Translating...
 <button class="action-btn" onclick="copyText()">📋 Copy</button>
 <button class="action-btn" onclick="speakText()">🔊 Speak</button>
 <button class="action-btn" onclick="clearText()">🗑 Clear</button>
+<button class="action-btn" onclick="stopSpeech()">⏹ Stop</button>
 </div>
 
 <div class="footer">
@@ -239,7 +240,11 @@ async function translateText(){
 
         const data = await response.json();
 
-        console.log(data);
+        if(data.error){
+            alert(data.error.message);
+            console.error(data.error);
+            return;
+        }
 
         document.getElementById("outputText").value =
         data.data.translations[0].translatedText;
@@ -258,26 +263,77 @@ function copyText(){
     const text =
     document.getElementById("outputText").value;
 
-    navigator.clipboard.writeText(text);
+    if(!text){
+        alert("Nothing to copy");
+        return;
+    }
 
+    navigator.clipboard.writeText(text);
     alert("Copied Successfully");
 }
 
-function speakText(){
+function speakText() {
 
     const text =
-    document.getElementById("outputText").value;
+    document.getElementById("outputText").value.trim();
 
-    const speech =
-    new SpeechSynthesisUtterance(text);
+    if (!text) {
+        alert("No translated text to speak");
+        return;
+    }
 
-    speech.lang =
+    speechSynthesis.cancel();
+
+    const langMap = {
+        en: "en-US",
+        hi: "hi-IN",
+        te: "te-IN",
+        ta: "ta-IN",
+        fr: "fr-FR",
+        es: "es-ES",
+        de: "de-DE"
+    };
+
+    const targetLang =
     document.getElementById("targetLang").value;
 
-    speechSynthesis.speak(speech);
+    const chunks =
+    text.match(/.{1,180}(\s|$)/g) || [text];
+
+    let index = 0;
+
+    function speakChunk() {
+
+        if(index >= chunks.length) return;
+
+        const utterance =
+        new SpeechSynthesisUtterance(chunks[index]);
+
+        utterance.lang =
+        langMap[targetLang] || "en-US";
+
+        utterance.rate = 1;
+        utterance.pitch = 1;
+        utterance.volume = 1;
+
+        utterance.onend = () => {
+            index++;
+            speakChunk();
+        };
+
+        speechSynthesis.speak(utterance);
+    }
+
+    speakChunk();
+}
+
+function stopSpeech(){
+    speechSynthesis.cancel();
 }
 
 function clearText(){
+
+    speechSynthesis.cancel();
 
     document.getElementById("inputText").value="";
     document.getElementById("outputText").value="";
