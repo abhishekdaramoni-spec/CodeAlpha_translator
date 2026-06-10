@@ -1,69 +1,89 @@
-# 🔮 AI Multilingual Translator+
+# 🔮 AI Multilingual Translator+ 
 
-A lightweight, high-performance, and visually premium multilingual translation application built with **Python** and **Streamlit**. Optimized for local runs on Windows and production deployments on Streamlit Community Cloud or Render.
+Welcome to the **AI Multilingual Translator+** repository! This project contains **two separate, fully functional translation applications** designed for different deployment and run environments:
 
----
-
-## ✨ Features
-
-1. **Text Translation**: Instant translations with optional language **Auto Detect** powered by Google Translate. Includes a ⇄ Swap button and a custom HTML/JS copy button with visual checkmark animations.
-2. **In-Place Image Translation (OCR)**: Extracts text from images (JPG, JPEG, PNG) using Tesseract OCR, masks the original text using local background color sampling, and overlays the translation directly in-context onto the image.
-3. **Text-to-Speech (TTS)**: Synthesizes translated text into clear audio playback using `gTTS` with download options.
-4. **Self-Healing Fonts**: Automatically downloads and caches required Google Noto fonts locally if the system lacks native Indic/Unicode script support (e.g. Hindi, Gujarati, Tamil, etc.).
-5. **Session Logs & History**: Maintains a history log of translations. Allows detailed record views and batch log exports to **CSV**, **TXT**, or ReportLab-formatted **PDF** logs.
-6. **Dark Mode Responsive UI**: Employs custom CSS styling integrated with Streamlit's official theme variables to adapt automatically to light and dark modes.
+1.  **Python & Streamlit Web App**: An advanced, full-featured translation dashboard with text-to-speech audio downloads, dynamic translation history logs (CSV/TXT/PDF), and in-place image OCR translation.
+2.  **HTML/CSS/JS Single-Page Web App**: A lightweight, self-contained, instant-loading web page that can be opened on any browser or hosted statically on services like GitHub Pages.
 
 ---
 
-## 📁 Project Structure
+## 📁 Repository Structure
+
+Here is how the project files are organized:
 
 ```text
-ai translator/
-├── app.py                  # Streamlit frontend, layouts, and pages
-├── translator_utils.py     # Translation, OCR, gTTS, and ReportLab PDF compilers
-├── requirements.txt        # Python library dependencies
-├── packages.txt            # System dependencies (for Streamlit Cloud Tesseract)
-├── runtime.txt             # Target Python environment (for Render)
-├── render.yaml             # Web service deployment configuration (for Render)
-├── .fonts/                 # Cached Google Noto Unicode fonts (auto-downloaded)
-└── README.md               # Product documentation and user guide
+CodeAlpha_translator/
+├── frontend/
+│   └── index.html          # Self-contained HTML/CSS/JS single-page web app
+├── app.py                  # Streamlit dashboard frontend, layout, and UI state
+├── translator_utils.py     # Python translation engine, OCR overlay, and PDF compiler
+├── requirements.txt        # Python package dependencies
+├── packages.txt            # Linux system packages (Tesseract OCR for Streamlit Cloud)
+├── runtime.txt             # Python runtime environment specification (for Render)
+├── render.yaml             # Web Service deployment blueprint (for Render)
+├── .fonts/                 # Pre-cached Google Noto Unicode fonts (for script rendering)
+└── README.md               # Repository documentation and guide
 ```
 
 ---
 
-## 🚀 Setup and Local Run
+## 🚀 How to Run the Applications
 
-### Prerequisites
-* **Python**: Version 3.10 or 3.11.
-* **Tesseract OCR (Windows Local)**: Install the binary from [UB Mannheim Tesseract Wiki](https://github.com/UB-Mannheim/tesseract/wiki) and configure its path under the **Settings** tab in the app.
-
-### Installation & Run
-1. Clone or copy the project files to your directory.
-2. Set up a virtual environment:
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: .\venv\Scripts\activate
-   ```
-3. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-4. Run the Streamlit server:
-   ```bash
-   streamlit run app.py
-   ```
-5. Open `http://localhost:8501` in your browser.
+### 🌐 1. The HTML Single-Page Web App (Instant Run)
+This version is completely self-contained, meaning it does not require Python, local servers, or installation.
+*   **Requirements**: None (except an internet connection).
+*   **How to Run**:
+    1. Open the [frontend/index.html](frontend/index.html) file.
+    2. Double-click it to open it directly in Chrome, Firefox, Safari, or Edge.
+    3. Type your text, select the target language, and click **Translate** (uses the built-in translation API key and supports speech synthesizers).
 
 ---
 
-## ☁️ Deployment
+### 🔮 2. The Python & Streamlit Web App (Full-Featured)
+This version runs a local Python server and supports OCR image translation, history logs, and file exports.
 
-### Option A: Streamlit Community Cloud (Recommended)
-1. Push the code to a GitHub repository.
+#### Prerequisites
+*   **Python**: Version 3.10 or 3.11.
+*   **Tesseract OCR (For Windows Local Image Translation)**:
+    1. Download and install Tesseract OCR from the [UB Mannheim Wiki](https://github.com/UB-Mannheim/tesseract/wiki).
+    2. Save its executable path (e.g. `C:\Program Files\Tesseract-OCR\tesseract.exe`) and configure it in the app's **Settings** tab.
+
+#### Installation & Local Launch
+1. Open your terminal or Command Prompt in the repository folder.
+2. Set up a virtual environment:
+   ```bash
+   python -m venv venv
+   # On Windows:
+   .\venv\Scripts\activate
+   # On macOS/Linux:
+   source venv/bin/activate
+   ```
+3. Install the dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+4. Start the Streamlit web server:
+   ```bash
+   streamlit run app.py
+   ```
+5. Open **[http://localhost:8501](http://localhost:8501)** in your web browser.
+
+---
+
+## ☁️ Cloud Deployment Guides
+
+### A. Deploying the Streamlit Web App (Streamlit Community Cloud)
+1. Push this repository to your GitHub account.
 2. Log into [Streamlit Share](https://share.streamlit.io/).
-3. Connect your repository and select `app.py` as the entrypoint.
-4. Streamlit will read `packages.txt` to automatically install Tesseract OCR and run the app.
+3. Connect your repository and select `app.py` as the main file.
+4. Streamlit will automatically read [packages.txt](packages.txt) to install Tesseract OCR on the server and deploy your application.
 
-### Option B: Render
-1. Connect your repository to Render.
-2. Render will automatically read `render.yaml` to deploy it as a Python Web Service.
+### B. Deploying the Streamlit Web App (Render)
+1. Link your GitHub repository to [Render](https://render.com/).
+2. Render will automatically read the [render.yaml](render.yaml) file to compile the dependencies and run the service.
+
+### C. Deploying the HTML App (GitHub Pages)
+1. Go to your GitHub Repository **Settings** -> **Pages**.
+2. Set the Source build to **Deploy from a branch**.
+3. Choose the `main` branch and specify `/frontend` (or copy `/frontend/index.html` to the root directory to host it at the main domain).
+4. Save to deploy your static website for free.
